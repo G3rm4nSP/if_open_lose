@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "703888432453",
+    "project_id": "if-you-open-you-lose",
+    "storage_bucket": "if-you-open-you-lose.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:703888432453:android:52891ba8aa7e02b711722c",
+        "android_client_info": {
+          "package_name": "com.appsurdappsg.ifopenlose"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbtyp7itjoNjGykovYgqxrrg1SJT0vPLo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

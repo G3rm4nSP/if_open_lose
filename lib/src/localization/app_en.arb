@@ -1,0 +1,17 @@
+{
+  "@@locale": "en",
+  "appTitle": "The Game",
+  "juegoMensaje": "The game has already begins. If you reopen or uninstall the app, you lose. How long will you last? Sign to start playing.",
+  "ingresaNombre": "Enter your name",
+  "nombreRequerido": "Name is required",
+  "firmar": "Sign",
+  "notificacionTitulo": "The Game",
+  "notificacionCuerpo": "The game has started. Good luck!",
+  "duracion": "Duration",
+  "duracionAnosMesesDias": "{anios} years, {meses} months and {dias} days",
+  "duracionMesesDias": "{meses} months and {dias} days",
+  "duracionDiasHorasMinutos": "{dias} days, {horas} hours and {minutos} minutes",
+  "duracionHorasMinutosSegundos": "{horas} hours, {minutos} minutes and {segundos} seconds",
+  "duracionMinutosSegundos": "{minutos} minutes and {segundos} seconds",
+  "duracionSegundos": "{segundos} seconds"
+}

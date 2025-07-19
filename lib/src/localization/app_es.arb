@@ -1,0 +1,18 @@
+{
+  "@@locale": "es",
+  "appTitle": "El Juego",
+  "juegoMensaje": "El juego ya ha empezado. Si vuelves a abrir la aplicación o la desinstalas, pierdes. ¿Cuánto durarás? Firma para empezar el juego.",
+  "ingresaNombre": "Introduce tu nombre",
+  "nombreRequerido": "El nombre es obligatorio",
+  "firmar": "Firmar",
+  "notificacionTitulo": "El Juego",
+  "notificacionCuerpo": "El juego ya ha empezado. ¡Buena suerte!",
+  "duracion": "Duración",
+
+  "duracionAnosMesesDias": "{anios} años, {meses} meses y {dias} días",
+  "duracionMesesDias": "{meses} meses y {dias} días",
+  "duracionDiasHorasMinutos": "{dias} días, {horas} horas y {minutos} minutos",
+  "duracionHorasMinutosSegundos": "{horas} horas, {minutos} minutos y {segundos} segundos",
+  "duracionMinutosSegundos": "{minutos} minutos y {segundos} segundos",
+  "duracionSegundos": "{segundos} segundos"
+}
