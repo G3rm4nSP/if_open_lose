@@ -7,7 +7,11 @@
   "firmar": "Sign",
   "notificacionTitulo": "The Game",
   "notificacionCuerpo": "The game has started. Good luck!",
-  "duracion": "Duration",
+  "perdedorTitulo": "You have lost!",
+  "perdedorMensaje": "You have lost! The game has ended.",
+  "perdedorDescripcion": "You opened the app after the game started. You have lost.",   
+  "perdedorDuracion": "Game duration",
+  
   "duracionAnosMesesDias": "{anios} years, {meses} months and {dias} days",
   "duracionMesesDias": "{meses} months and {dias} days",
   "duracionDiasHorasMinutos": "{dias} days, {horas} hours and {minutos} minutes",

@@ -49,7 +49,7 @@ class _GameViewState extends State<GameView> {
 
   @override
   Widget build(BuildContext context) {
-    final loc = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context)!;
 
     if (_procesando) {
       return const Scaffold(
@@ -65,13 +65,30 @@ class _GameViewState extends State<GameView> {
       );
 
       return Scaffold(
+        appBar: AppBar(
+          title: Text(l10n.perdedorTitulo),
+        ),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24.0),
-            child: Text(
-              "${loc.notificacionTitulo}: ${loc.notificacionCuerpo}\n\n${loc.juegoMensaje}\n\n${loc.duracion}: $duracion",
-              style: const TextStyle(fontSize: 20),
-              textAlign: TextAlign.center,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "${l10n.notificacionTitulo}: ${l10n.perdedorMensaje}\n\n${l10n.perdedorDescripcion}\n\n${l10n.perdedorDuracion}:\n $duracion",
+                  style: const TextStyle(fontSize: 20),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    // Aquí puedes navegar a la pantalla de ranking
+                    // Navigator.push(context, MaterialPageRoute(builder: (context) => RankingScreen()));
+                  },
+                  child: Text("ver ranking"),
+                ),
+              ],
             ),
           ),
         ),
@@ -86,7 +103,7 @@ class _GameViewState extends State<GameView> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                loc.juegoMensaje,
+                l10n.juegoMensaje,
                 style: const TextStyle(fontSize: 18),
                 textAlign: TextAlign.center,
               ),
@@ -94,14 +111,14 @@ class _GameViewState extends State<GameView> {
               TextField(
                 controller: _controller,
                 decoration: InputDecoration(
-                  labelText: loc.ingresaNombre,
-                  errorText: _nombreVacio ? loc.nombreRequerido : null,
+                  labelText: l10n.ingresaNombre,
+                  errorText: _nombreVacio ? l10n.nombreRequerido : null,
                 ),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _firmar,
-                child: Text(loc.firmar),
+                child: Text(l10n.firmar),
               ),
             ],
           ),

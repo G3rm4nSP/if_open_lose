@@ -23,6 +23,10 @@ class FirebaseService {
       if (doc.exists) {
         final usuario = Usuario.fromMap(doc.data()!);
 
+        if (usuario.perdedor) {
+          // Si el usuario ya es perdedor, no hacemos nada
+          return usuario;
+        }
         // Actualizar la fechaFinal al momento actual
         final actualizado = usuario.copyWith(
           fechaFinal: DateTime.now(),
