@@ -38,9 +38,13 @@ class _GameViewState extends State<GameView> {
       _nombreVacio = false;
     });
 
-    await _gameController.crearNuevoUsuario(nombre);
-    await NotificationService.showStartNotification();
-    await NotificationService.scheduleRandomNotifications();
+    final usuario = await _gameController.crearNuevoUsuario(nombre);
+
+    // Actualizar token FCM para ese usuario
+    await NotificationService.updateTokenInFirestore(usuario);
+
+    await NotificationService.showStartNotification(context,
+        tema: usuario.temaNotificacion);
 
     Future.delayed(const Duration(milliseconds: 500), () {
       SystemNavigator.pop();
@@ -117,7 +121,9 @@ class _GameViewState extends State<GameView> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _firmar,
+                onPressed: () async {
+                  await _firmar(); // ✅ No esperas un valor
+                },
                 child: Text(l10n.firmar),
               ),
             ],

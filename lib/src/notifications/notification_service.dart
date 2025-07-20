@@ -1,156 +1,77 @@
-import 'dart:math';
-import 'dart:io';
-
-import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
+import 'package:firebase_messaging/firebase_messaging.dart';
+import '../firebase/firebase_service.dart';
+import '../firebase/user_model.dart';
 
 class NotificationService {
-  static final FlutterLocalNotificationsPlugin _notificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-
-  static const _channelId = 'game_notifications_channel';
+  static final FlutterLocalNotificationsPlugin
+      _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
   static Future<void> init() async {
-    const androidSettings =
+    const initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
-    const iosSettings = DarwinInitializationSettings();
+    final initializationSettingsIOS = DarwinInitializationSettings();
+    final initializationSettings = InitializationSettings(
+        android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
 
-    const initSettings = InitializationSettings(
-      android: androidSettings,
-      iOS: iosSettings,
-    );
-
-    tz.initializeTimeZones();
-    tz.setLocalLocation(tz.getLocation('Europe/Madrid')); // ajusta a tu zona
-
-    await _notificationsPlugin.initialize(initSettings);
-
-    if (Platform.isAndroid) {
-      const androidChannel = AndroidNotificationChannel(
-        _channelId,
-        'Game Notifications',
-        description: 'Notificaciones del juego If Open, Lose',
-        importance: Importance.high,
-      );
-
-      await _notificationsPlugin
-          .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
-          ?.createNotificationChannel(androidChannel);
-    }
+    await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
   static Future<void> requestPermissions() async {
-    if (Platform.isAndroid) {
-      final status = await Permission.notification.status;
-      if (!status.isGranted) {
-        final result = await Permission.notification.request();
-        print("Permiso de notificación: $result");
-      }
-    } else if (Platform.isIOS) {
-      final iosPlugin =
-          _notificationsPlugin.resolvePlatformSpecificImplementation<
-              IOSFlutterLocalNotificationsPlugin>();
+    await FirebaseMessaging.instance.requestPermission();
+  }
 
-      await iosPlugin?.requestPermissions(
-        alert: true,
-        badge: true,
-        sound: true,
-      );
+  static Future<String?> getFcmToken() async {
+    return await FirebaseMessaging.instance.getToken();
+  }
+
+  static Future<void> updateTokenInFirestore(Usuario usuario) async {
+    final token = await getFcmToken();
+    if (token != null && token != usuario.fcmToken) {
+      final firebaseService = FirebaseService();
+      await firebaseService.actualizarFcmToken(usuario.id, token);
     }
   }
 
-  static Future<void> showStartNotification() async {
-    const platformDetails = NotificationDetails(
-      android: AndroidNotificationDetails(
-        _channelId,
-        'Game Notifications',
-        importance: Importance.max,
-        priority: Priority.high,
-      ),
-      iOS: DarwinNotificationDetails(),
+  static Future<void> showStartNotification(BuildContext context,
+      {String? tema}) async {
+    // Personaliza el contenido y estilo según el tema recibido (opcional)
+    final androidDetails = AndroidNotificationDetails(
+      'start_channel',
+      'Start Notifications',
+      channelDescription: 'Notificaciones al iniciar el juego',
+      importance: Importance.max,
+      priority: Priority.high,
+      color: tema != null ? Color(_getColorFromTema(tema)) : null,
     );
+    final iosDetails = DarwinNotificationDetails();
+    final notificationDetails =
+        NotificationDetails(android: androidDetails, iOS: iosDetails);
+    final l10n = AppLocalizations.of(context)!;
 
-    await _notificationsPlugin.show(
+    await _flutterLocalNotificationsPlugin.show(
       0,
-      'El juego ha comenzado',
-      'Mantente firme. No abras esta app otra vez o perderás.',
-      platformDetails,
+      l10n.notificacionTitulo,
+      l10n.notificacionCuerpo,
+      notificationDetails,
     );
   }
 
-  static Future<void> scheduleRandomNotifications() async {
-    final prefs = await SharedPreferences.getInstance();
-    final alreadyScheduled = prefs.getBool('notifications_scheduled') ?? false;
-
-    if (alreadyScheduled) {
-      print("Notificaciones ya programadas.");
-      return;
+  static int _getColorFromTema(String tema) {
+    // Por ejemplo, asigna colores según tema (puedes extender)
+    switch (tema) {
+      case 'rojo':
+        return 0xFFFF0000;
+      case 'azul':
+        return 0xFF0000FF;
+      default:
+        return 0xFF2196F3; // azul por defecto
     }
-
-    final mensajes = await _fetchMessagesFromFirestore();
-    if (mensajes.isEmpty) {
-      print("No se encontraron mensajes.");
-      return;
-    }
-
-    final now = DateTime.now();
-    DateTime nextTime = now.add(const Duration(hours: 2));
-    final random = Random();
-
-    for (int i = 0; i < 30; i++) {
-      final mensaje = mensajes[random.nextInt(mensajes.length)];
-
-      try {
-        await _notificationsPlugin.zonedSchedule(
-          i + 1,
-          'Juego en curso',
-          mensaje,
-          tz.TZDateTime.from(nextTime, tz.local),
-          const NotificationDetails(
-            android: AndroidNotificationDetails(
-              _channelId,
-              'Game Notifications',
-              importance: Importance.high,
-              priority: Priority.high,
-            ),
-            iOS: DarwinNotificationDetails(),
-          ),
-          androidAllowWhileIdle: true,
-          uiLocalNotificationDateInterpretation:
-              UILocalNotificationDateInterpretation.absoluteTime,
-          androidScheduleMode:
-              AndroidScheduleMode.inexactAllowWhileIdle, // 💡 este
-        );
-
-        print("Notificación $i programada para $nextTime");
-      } catch (e) {
-        print("Error programando notificación $i: $e");
-      }
-
-      final delayHours = 5 + random.nextInt(3); // entre 5 y 7 horas
-      nextTime = nextTime.add(Duration(hours: delayHours));
-    }
-
-    await prefs.setBool('notifications_scheduled', true);
   }
 
-  static Future<List<String>> _fetchMessagesFromFirestore() async {
-    try {
-      final snapshot =
-          await FirebaseFirestore.instance.collection('notificaciones').get();
-
-      return snapshot.docs
-          .map((doc) => doc.data()['mensaje'] as String)
-          .where((m) => m.isNotEmpty)
-          .toList();
-    } catch (e) {
-      print("Error obteniendo notificaciones: $e");
-      return [];
-    }
+  static Future<void> cancelAllNotifications() async {
+    await _flutterLocalNotificationsPlugin.cancelAll();
   }
 }

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:if_open_lose/src/firebase/user_model.dart';
 import '../firebase/firebase_service.dart';
 
 class GameController {
   final FirebaseService _firebaseService = FirebaseService();
 
-  Future<void> crearNuevoUsuario(String nombre) async {
-    await _firebaseService.crearUsuario(nombre);
+  Future<Usuario> crearNuevoUsuario(String nombre) async {
+    return await _firebaseService.crearUsuario(nombre);
   }
 
   String formatearDuracion(

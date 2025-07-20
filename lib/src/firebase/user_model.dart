@@ -4,6 +4,8 @@ class Usuario {
   final DateTime fechaInicio;
   final DateTime fechaFinal;
   final bool perdedor;
+  final String? fcmToken;
+  final String? temaNotificacion;
 
   Usuario({
     required this.id,
@@ -11,6 +13,8 @@ class Usuario {
     required this.fechaInicio,
     required this.fechaFinal,
     this.perdedor = false,
+    this.fcmToken,
+    this.temaNotificacion = 'azul',
   });
 
   set fechaFinal(DateTime fecha) {
@@ -36,6 +40,8 @@ class Usuario {
       'fechaInicio': fechaInicio.toIso8601String(),
       'fechaFinal': fechaFinal.toIso8601String(),
       'perdedor': perdedor,
+      'fcmToken': fcmToken,
+      'temaNotificacion': temaNotificacion,
     };
   }
 
@@ -46,6 +52,8 @@ class Usuario {
       fechaInicio: DateTime.parse(map['fechaInicio']),
       fechaFinal: DateTime.parse(map['fechaFinal']),
       perdedor: map['perdedor'] ?? false,
+      fcmToken: map['fcmToken'],
+      temaNotificacion: map['temaNotificacion'],
     );
   }
 
@@ -55,6 +63,8 @@ class Usuario {
     DateTime? fechaInicio,
     DateTime? fechaFinal,
     bool? perdedor,
+    String? fcmToken,
+    String? temaNotificacion,
   }) {
     return Usuario(
       id: id ?? this.id,
@@ -62,6 +72,8 @@ class Usuario {
       fechaInicio: fechaInicio ?? this.fechaInicio,
       fechaFinal: fechaFinal ?? this.fechaFinal,
       perdedor: perdedor ?? this.perdedor,
+      fcmToken: fcmToken ?? this.fcmToken,
+      temaNotificacion: temaNotificacion ?? this.temaNotificacion,
     );
   }
 }
